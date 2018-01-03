@@ -7,19 +7,10 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-# Copy source
-ARG NPM_TOKEN
-COPY .npmrc /tmp/.npmrc
-COPY package.json /tmp/package.json
-RUN cd /tmp && npm install --production
-RUN rm -f /tmp/.npmrc
-
-RUN mkdir -p /src && cp -a /tmp/node_modules /src/
-
-# Bootstrap data
+RUN mkdir -p /src
 WORKDIR /src
-ADD . /src
-RUN rm -f /src/.npmrc
+COPY package.json /src
+RUN npm install --production
+COPY . /src
 EXPOSE 80
-CMD npm run start
-
+CMD ["npm", "start"]
